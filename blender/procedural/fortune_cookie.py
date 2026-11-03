@@ -1,6 +1,6 @@
 """Procedural fortune cookie for Blender 5.x.
 
-Run headless (writes fortune_cookie.blend next to this file, optionally renders):
+Run headless (writes fortune_cookie_procedural.blend next to this file, optionally renders):
   /Applications/Blender.app/Contents/MacOS/Blender -b -P fortune_cookie.py -- --render out.png
 Options after "--":  --render PATH   --samples N   --pct PERCENT
 Or open Blender's Scripting tab, open this file and press Run Script.
@@ -347,7 +347,7 @@ for screen in bpy.data.screens:
             space.region_3d.view_perspective = "CAMERA"
             space.overlay.show_floor = False
 
-bpy.ops.wm.save_as_mainfile(filepath=os.path.join(HERE, "fortune_cookie.blend"))
+bpy.ops.wm.save_as_mainfile(filepath=os.path.join(HERE, "fortune_cookie_procedural.blend"))
 if RENDER_PATH:
     scene.render.filepath = RENDER_PATH
     bpy.ops.render.render(write_still=True)

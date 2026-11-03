@@ -295,13 +295,13 @@ const rimMat = cookieMat;
 const breakMat = new THREE.MeshStandardMaterial({ map: breakTex.map, bumpMap: breakTex.bump, bumpScale: 3, roughness: 0.92, vertexColors: true, emissive: new THREE.Color(0x3a1a04), emissiveIntensity: 0.15 });
 const cookieMats = [cookieMat, rimMat, breakMat];
 
-/* ------------------------------------------------------------------ the Tripo cookie (cookie.glb) */
+/* ------------------------------------------------------------------ the Tripo cookie (assets/cookie.glb) */
 // fortune cookie render.glb, decimated and cracked into two halves in Blender (fortune_cookie.blend).
 // In the file: base on y = 0, the front crease dent faces +z, the halves meet near x = 0.
 const MODEL_K = 1.15; // match the size the scene was tuned for
 const breakMatT = new THREE.MeshStandardMaterial({ color: new THREE.Color(0.95, 0.78, 0.52), map: breakTex.map, bumpMap: breakTex.bump, bumpScale: 3, roughness: 0.92, emissive: new THREE.Color(0x3a1a04), emissiveIntensity: 0.15 });
 const TRIPO = await (async () => {
-  const gltf = await new GLTFLoader().loadAsync('cookie.glb');
+  const gltf = await new GLTFLoader().loadAsync('assets/cookie.glb');
   gltf.scene.updateMatrixWorld(true);
   let src = null;
   const half = (name, comFrom) => {

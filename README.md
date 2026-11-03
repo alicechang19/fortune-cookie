@@ -57,17 +57,25 @@ Then open http://localhost:8931/.
 
 ## Deployment
 
-The site is hosted on [Vercel](https://fortune-cookie-five-pi.vercel.app) as a static site with no build step. `.vercelignore` limits the upload to `index.html` and `cookie.glb`, so the Blender files, screenshots and the original render stay in the repo only.
+The site is hosted on [Vercel](https://fortune-cookie-five-pi.vercel.app) as a static site with no build step. `.vercelignore` limits the upload to `index.html` and `assets/`, so the Blender files and screenshots stay in the repo only.
 
 ## What's inside
 
-- `index.html`: the whole app. It uses three.js r170 from a CDN, custom rigid-body physics for the cookie halves, synthesised Web Audio for every crinkle, crackle and snap, and no frameworks.
-- `cookie.glb`: the cookie used in the app. It's decimated, hollowed and cracked into two halves, and includes light copies for the pile.
-- `fortune cookie render.glb`: the original Tripo model.
-- `build_cookie.py`: the Blender script that turns the Tripo model into `cookie.glb`:
+```
+index.html                 the whole app
+assets/
+  cookie.glb               the cookie the page loads
+blender/
+  build_cookie.py          turns the Tripo model into assets/cookie.glb
+  fortune_cookie.blend     the Tripo cookie and its game halves
+  fortune_cookie_render.glb   the original Tripo model
+  procedural/              the earlier procedural Blender cookie
+docs/                      screenshots for this page
+```
+
+- **`index.html`** uses three.js r170 from a CDN, custom rigid-body physics for the cookie halves, synthesised Web Audio for every crinkle, crackle and snap, and no frameworks.
+- **`assets/cookie.glb`** is decimated, hollowed and cracked into two halves, and includes light copies for the pile.
+- **Rebuilding the cookie** from the Tripo model (run from the project root):
   ```sh
-  blender -b --python build_cookie.py -- "fortune cookie render.glb" cookie.glb fortune_cookie.blend
+  blender -b --python blender/build_cookie.py -- blender/fortune_cookie_render.glb assets/cookie.glb blender/fortune_cookie.blend
   ```
-- `fortune_cookie.blend`: the Tripo cookie and its game halves in Blender.
-- `fortune_cookie.py`, `fortune_cookie_procedural.blend`: the earlier procedural Blender cookie.
-- `docs/`: screenshots for this page.
