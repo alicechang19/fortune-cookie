@@ -1733,7 +1733,8 @@ canvas.addEventListener('pointerdown', (e) => {
   try { canvas.setPointerCapture(e.pointerId); } catch (err) {}
   app.pressAt.set(e.clientX, e.clientY);
   drag.on = true; drag.mode = null; drag.x = e.clientX; drag.y = e.clientY; drag.t = performance.now(); drag.vx = drag.vy = 0;
-  if (app.state === 'pile') { drag.on = false; pickPack(hitPack()); return; }
+  // in the pile a press is a tap until it moves: sliding stirs the packs, and only a tap (on release) picks one
+  if (app.state === 'pile') { drag.mode = 'pileTap'; brushHas = false; return; }
   if (app.state === 'wrapped') { drag.on = false; tear(); return; }
   if (app.state === 'picking') { drag.on = false; return; }
   if (app.state === 'cracked') {
@@ -1758,6 +1759,7 @@ canvas.addEventListener('pointermove', (e) => {
   setPointer(e);
   if (!drag.on) return;
   const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+  if (drag.mode === 'pileTap' && Math.hypot(e.clientX - app.pressAt.x, e.clientY - app.pressAt.y) > 10) drag.mode = 'stir';
   if (drag.mode === null && app.cookie && (app.state === 'idle' || app.state === 'intro') && Math.hypot(e.clientX - app.pressAt.x, e.clientY - app.pressAt.y) > 7) {
     drag.mode = 'spin'; app.pressing = false; app.pressT = 1;
   }
@@ -1786,8 +1788,15 @@ function endDrag() {
   if (drag.mode === 'grab') { grab.body = null; setCursor('pickup'); }
   drag.mode = null;
 }
-addEventListener('pointerup', () => { const spun = drag.mode === 'spin'; endDrag(); if (!spun) endPress(); else app.pressing = false; });
-addEventListener('pointercancel', () => { endDrag(); endPress(); });
+// a lifted finger isn't hovering anywhere: forget it so the pile stops reacting, and the next touch starts fresh
+function liftTouch(e) { if (e.pointerType === 'touch' && app.state === 'pile') pointer.has = false; }
+addEventListener('pointerup', (e) => {
+  const tapped = drag.on && drag.mode === 'pileTap', spun = drag.mode === 'spin';
+  endDrag(); if (!spun) endPress(); else app.pressing = false;
+  if (tapped && app.state === 'pile') { setPointer(e); pickPack(hitPack()); }
+  liftTouch(e);
+});
+addEventListener('pointercancel', (e) => { endDrag(); endPress(); liftTouch(e); });
 addEventListener('blur', () => { endDrag(); endPress(); });
 addEventListener('contextmenu', (e) => e.preventDefault());
 addEventListener('keydown', (e) => {
