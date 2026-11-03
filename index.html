@@ -77,6 +77,87 @@
   #ring .track { stroke: rgba(88, 56, 30, 0.14); }
   #ring .fill { stroke: rgba(88, 56, 30, 0.7); stroke-linecap: round; transform: rotate(-90deg); transform-origin: 50% 50%; }
   @media (max-width: 520px) { .ui { font-size: 18px; bottom: calc(env(safe-area-inset-bottom, 0px) + 30px); } }
+  /* bottom buttons: "listen to your fortune" on the front of the slip, "how do I say this?" on the back */
+  .action {
+    background: rgba(251, 247, 238, 0.72); border: 1px solid var(--line); border-radius: 999px;
+    padding: 10px 22px 11px; cursor: pointer; opacity: 0; pointer-events: none; color: var(--ink-strong);
+    transform: translate(-50%, 8px) scale(0.98);
+    transition: opacity 0.32s cubic-bezier(.23,1,.32,1), transform 0.32s cubic-bezier(.23,1,.32,1), background-color 0.3s ease, border-color 0.3s ease;
+  }
+  .action.show { opacity: 1; pointer-events: auto; transform: translate(-50%, 0) scale(1); }
+  .action:hover { border-color: rgba(88,56,30,0.45); background-color: rgba(251, 247, 238, 0.95); }
+  .action:active { transform: translate(-50%, 1px) scale(0.96); transition-duration: 0.12s; }
+  .action:focus-visible { outline: 1px solid rgba(88,56,30,0.6); outline-offset: 4px; }
+
+  #listen.playing { background: #c4231c; border-color: #c4231c; color: #fff; }
+  /* the first-time hint moves up out of the way of the buttons */
+  #hint { transition: opacity 0.9s ease, transform 0.9s cubic-bezier(.2,.7,.2,1), bottom 0.3s ease; }
+  body.has-action #hint { bottom: calc(env(safe-area-inset-bottom, 0px) + 100px); }
+  /* the pronunciation coach: a bottom sheet on phones, a card on wider screens */
+  #coach {
+    position: fixed; inset: 0; z-index: 60; display: flex; align-items: flex-end; justify-content: center;
+    background: rgba(60, 36, 16, 0.28); opacity: 0; transition: opacity 0.25s ease;
+  }
+  #coach[hidden] { display: none; }
+  #coach.show { opacity: 1; }
+  .hand-cursor #coach, .hand-cursor #coach * { cursor: auto !important; }
+  .hand-cursor #coach button { cursor: pointer !important; }
+  .coach-card {
+    position: relative; box-sizing: border-box; width: min(560px, 100%); max-height: min(88vh, 780px);
+    display: flex; flex-direction: column; overflow: hidden; outline: none; border-radius: 22px 22px 0 0;
+    background: #fbf7ee; color: #2a1d12; box-shadow: 0 -10px 40px rgba(60, 36, 16, 0.22);
+    font: 16px/1.45 -apple-system, "Helvetica Neue", Helvetica, Arial, "PingFang TC", "Noto Sans TC", sans-serif;
+    user-select: text; -webkit-user-select: text;
+    transform: translateY(28px); transition: transform 0.36s cubic-bezier(.23,1,.32,1);
+  }
+  #coach.show .coach-card { transform: none; }
+  /* only the content scrolls, so the close button stays put */
+  .coach-body {
+    overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y;
+    padding: 26px 20px calc(env(safe-area-inset-bottom, 0px) + 24px);
+  }
+  @media (min-width: 640px) {
+    #coach { align-items: center; padding: 24px; }
+    .coach-card { border-radius: 22px; box-shadow: 0 20px 60px rgba(60, 36, 16, 0.25); }
+    .coach-body { padding: 30px 28px 26px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .coach-card, #coach.show .coach-card { transform: none; transition: none; } }
+  .coach-card p { margin: 0; }
+  .coach-close {
+    position: absolute; z-index: 1; top: 10px; right: 10px; width: 44px; height: 44px; border: 0; border-radius: 50%;
+    background: rgba(251, 247, 238, 0.94); box-shadow: 0 1px 6px rgba(60, 36, 16, 0.14);
+    color: rgba(70, 40, 18, 0.75); font-size: 28px; line-height: 1; cursor: pointer;
+  }
+  .coach-close:hover { background: #f3ead9; }
+  .coach-kicker { font: italic 400 18px/1.3 'Cormorant Garamond', Georgia, serif; color: rgba(88, 56, 30, 0.75); padding-right: 40px; }
+  .coach-zh { margin: 10px 0 2px; font-size: 44px; line-height: 1.2; font-weight: 500; letter-spacing: 0.04em; }
+  .coach-py { font-size: 20px; color: #5b4a3c; }
+  .coach-en { margin-top: 8px !important; font-size: 18px; font-weight: 500; }
+  .coach-play { display: flex; gap: 10px; margin: 18px 0 6px; }
+  .coach-play button {
+    flex: 1; min-height: 48px; border-radius: 999px; border: 1px solid rgba(88, 56, 30, 0.3);
+    background: #fff; color: #2a1d12; font: 600 16px/1 inherit; font-family: inherit; cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.12s ease;
+  }
+  .coach-play button:hover { background: #f3ead9; }
+  .coach-play button:active { transform: scale(0.97); }
+  .coach-play button.playing { background: #c4231c; border-color: #c4231c; color: #fff; }
+  .coach-play button:focus-visible, .coach-close:focus-visible { outline: 2px solid rgba(88,56,30,0.6); outline-offset: 2px; }
+  .coach-note { font-size: 14px; color: #6e6359; margin-top: 6px !important; }
+  .coach-sylls {
+    list-style: none; padding: 0; margin: 14px 0 0; display: grid; gap: 8px;
+    grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  }
+  .coach-sylls li {
+    display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 10px 6px 10px;
+    border-radius: 14px; background: #f3ead9; text-align: center;
+  }
+  .coach-sylls .ch { font-size: 30px; line-height: 1.15; }
+  .coach-sylls .py { font-size: 17px; font-weight: 600; }
+  .coach-sylls svg { margin: 2px 0; }
+  .coach-sylls .grid { stroke: rgba(88, 56, 30, 0.16); stroke-width: 1; }
+  .coach-sylls .pitch { fill: none; stroke: #c4231c; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+  .coach-sylls .tone { font-size: 13px; font-weight: 600; }
 </style>
 </head>
 <body>
@@ -85,6 +166,9 @@
 <div id="hint" class="ui"></div>
 <div id="hand" aria-hidden="true"><span>✋</span></div>
 <button id="again" class="ui" type="button">another cookie</button>
+<button id="listen" class="ui action" type="button"><span aria-hidden="true">🔊</span> <span class="label">listen to your fortune</span></button>
+<button id="say" class="ui action" type="button" aria-haspopup="dialog"><span aria-hidden="true">🔊</span> how do I say this?</button>
+<div id="coach" role="dialog" aria-modal="true" aria-labelledby="coach-title" hidden></div>
 <svg id="ring" viewBox="0 0 76 76"><circle class="track" cx="38" cy="38" r="30"/><circle class="fill" cx="38" cy="38" r="30"/></svg>
 
 <script type="importmap">
@@ -98,6 +182,9 @@ import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+import { FRONTS, LESSONS } from './assets/fortunes.js';
+import { paintFront, paintBack } from './assets/slip-text.js';
+import { createCoach, speakParts, stopSpeaking, fortuneParts } from './assets/pronounce.js';
 
 const V3 = THREE.Vector3;
 const _qs = new THREE.Quaternion(), _axY = new V3(0, 1, 0), _axX = new V3(1, 0, 0);
@@ -750,111 +837,7 @@ function updatePuff(dt) {
 }
 
 /* ------------------------------------------------------------------ fortune slip */
-const FORTUNES = [
-  'The crumbs you leave behind are a map back to joy.',
-  'A small door opens soon. Walk through it before you understand why.',
-  'Your patience is about to be rewarded with something better than you waited for.',
-  'Today, say the kind thing you were only going to think.',
-  'You will finish something you forgot you started.',
-  'The answer is simpler than the question you keep asking.',
-  'A stranger’s laugh will remind you of your own.',
-  'What you plant quietly will bloom loudly.',
-  'You are someone’s favourite part of the day.',
-  'Rest is not the opposite of progress.',
-  'An unexpected letter will make you smile twice.',
-  'Courage is just curiosity that kept walking.',
-  'Your next good idea arrives while you are doing the dishes.',
-  'Luck favours the one who shows up in comfortable shoes.',
-  'Someone is quietly proud of you right now.',
-  'You will be the calm in someone else’s storm.',
-  'The thing you are avoiding is smaller than its shadow.',
-  'A long-lost song will find you this week.',
-  'Treat your future self like a dear old friend.',
-  'Everything you need is already folded inside you.',
-  'Begin before you feel ready. Ready is a rumour.',
-  'Your kindness has a longer echo than you know.',
-  'Sweet things come to those who crack them open.',
-  'A wrong turn will lead somewhere wonderful.',
-  'The moon has been waiting for you to look up.',
-  'In a year, you will laugh about this worry.',
-  'Ask the question. Even a no is a door.',
-  'Something lovely is on its way, taking the scenic route.',
-  'Make room at the table. Abundance is coming.',
-  'Today’s small step is tomorrow’s long story.',
-  'A warm meal and good company will set things right.',
-  'Your hands will make something beautiful this month.',
-  'Listen closely — your instincts are whispering.',
-  'Joy is hiding in the ordinary. Go and find it.',
-  'The best seat in the house is the one you are in.',
-  'An old friend is thinking of you. Say hello.',
-  'Good things are crunchy on the outside.',
-  'You already know which way to go.',
-  'A cup of tea shared today will become a story told for years.',
-  'The right people will find you without a map.',
-  'Your laughter is louder than your doubts.',
-  'Tomorrow will be kinder than you expect.',
-  'A pocket you forgot about holds a small treasure.',
-  'Every good thing begins as a maybe.',
-  'You will soon be asked for advice. Trust what you say.',
-  'The slow road has the best views.',
-  'Write it down. Future you will thank you.',
-  'A kind word you gave away is on its way back.',
-  'Your plans are about to grow wings.',
-  'The sun will find you even on a cloudy day.',
-  'A surprise invitation will be worth the yes.',
-  'Someone will remember your name and smile.',
-  'Good news travels slowly, but it is travelling to you.',
-  'Someone will borrow your idea and make you proud.',
-  'A messy kitchen is proof of a happy home.',
-  'Your second wind is closer than you think.',
-  'Trust the friend who brings snacks.',
-  'You will learn something new and tell everyone about it.',
-  'The best adventures start with a wrong bus.',
-  'Say yes to the dumplings.',
-  'A tidy drawer will bring you unreasonable peace.',
-  'Your stubbornness will finally pay off.',
-  'Look twice at the person who makes you laugh.',
-  'There is a nap in your near future.',
-  'A lost thing will turn up exactly when you need it.',
-  'Your smile is someone’s favourite weather.',
-  'Plant the seed. Forget the date. Enjoy the surprise.',
-  'The world is wide and you are welcome in it.',
-  'You will soon taste something unforgettable.',
-  'Small kindnesses make the longest memories.',
-  'A good book will find you at the right time.',
-  'Let the kettle sing. Good news follows.',
-  'Your heart knows the way home.',
-  'A gentle no will protect a happy yes.',
-  'Someone far away is telling a story about you.',
-  'Even the moon has phases. Be easy on yourself.',
-  'You will fix something today with your own two hands.',
-  'A long walk will answer a short question.',
-  'Your grandmother would approve of what you are about to do.',
-  'Abundance arrives in small, frequent parcels.',
-  'Share the last bite. Luck likes generosity.',
-  'A new friendship begins with a shared umbrella.',
-  'Today you will notice something beautiful nobody else saw.',
-  'Keep your door open. Good company is on the way.',
-  'The question you fear asking has a happy answer.',
-  'Call home. Someone has good news.',
-  'You will be lucky in small ways all week.',
-  'Do the brave thing first, then have dessert.',
-  'Your favourite chapter has not been written yet.',
-  'A red envelope of good luck is coming your way.',
-  'The stars approve of your new direction.',
-  'Patience: the dumplings are worth the wait.',
-  'Change your route home and meet your luck.',
-  'What feels like an ending is a fold, not a tear.',
-  'You will soon have a reason to dance in the kitchen.',
-  'Water the plant. Water yourself too.',
-  'An honest friend is worth more than jade.',
-  'You will make someone’s ordinary day extraordinary.',
-  'The best is still warm from the oven.',
-  'Your calm will open a door that force could not.',
-  'A happy accident is scheduled for this week.',
-  'You are exactly where your next chapter begins.',
-  'Do not fear the crack — that is how the fortune gets out.',
-];
+/* fortunes and lessons live in assets/fortunes.js; slip layout in assets/slip-text.js */
 // draw without repeats: shuffle the whole list, deal it out, reshuffle when empty
 function makeBag(items) {
   let bag = [];
@@ -863,7 +846,7 @@ function makeBag(items) {
     return bag.pop();
   };
 }
-const nextFortune = makeBag(FORTUNES);
+const nextFortune = makeBag(FRONTS), nextLesson = makeBag(LESSONS);
 const SW = 2.3, SH = 0.56;
 const TW = 2048, TH = Math.round(TW * SH / SW);
 const slipFrontCv = document.createElement('canvas'); slipFrontCv.width = TW; slipFrontCv.height = TH;
@@ -890,67 +873,15 @@ const paperCv = (() => {
   c.fillStyle = g; c.fillRect(0, 0, TW, TH);
   return cv;
 })();
-const INK = '#1d1c1a';
 const SANS = 'Helvetica Neue, Helvetica, Arial, sans-serif';
-// "Learn Chinese" words for the back of the slip: [English, simplified characters, pinyin]
-const WORDS = [
-  // people
-  ['Friend', '朋友', 'péng yǒu'], ['Family', '家人', 'jiā rén'], ['Mom', '妈妈', 'mā ma'], ['Dad', '爸爸', 'bà ba'],
-  ['Grandma', '奶奶', 'nǎi nai'], ['Grandpa', '爷爷', 'yé ye'], ['Big Sister', '姐姐', 'jiě jie'], ['Little Brother', '弟弟', 'dì di'],
-  ['Child', '孩子', 'hái zi'], ['Teacher', '老师', 'lǎo shī'], ['Person', '人', 'rén'], ['Home', '家', 'jiā'],
-  // food and drink
-  ['Tea', '茶', 'chá'], ['Cookie', '饼干', 'bǐng gān'], ['Water', '水', 'shuǐ'], ['Rice', '米饭', 'mǐ fàn'],
-  ['Noodles', '面条', 'miàn tiáo'], ['Dumpling', '饺子', 'jiǎo zi'], ['Bun', '包子', 'bāo zi'], ['Egg', '鸡蛋', 'jī dàn'],
-  ['Fish', '鱼', 'yú'], ['Tofu', '豆腐', 'dòu fu'], ['Soup', '汤', 'tāng'], ['Apple', '苹果', 'píng guǒ'],
-  ['Orange', '橙子', 'chéng zi'], ['Peach', '桃子', 'táo zi'], ['Watermelon', '西瓜', 'xī guā'], ['Mooncake', '月饼', 'yuè bǐng'],
-  ['Sugar', '糖', 'táng'], ['Milk Tea', '奶茶', 'nǎi chá'], ['Chopsticks', '筷子', 'kuài zi'], ['Delicious', '好吃', 'hǎo chī'],
-  ['Eat', '吃', 'chī'], ['Drink', '喝', 'hē'],
-  // nature and seasons
-  ['Moon', '月亮', 'yuè liang'], ['Sun', '太阳', 'tài yáng'], ['Star', '星星', 'xīng xing'], ['Sky', '天空', 'tiān kōng'],
-  ['Cloud', '云', 'yún'], ['Rain', '雨', 'yǔ'], ['Snow', '雪', 'xuě'], ['Wind', '风', 'fēng'],
-  ['Mountain', '山', 'shān'], ['River', '河', 'hé'], ['Sea', '海', 'hǎi'], ['Tree', '树', 'shù'],
-  ['Flower', '花', 'huā'], ['Bamboo', '竹子', 'zhú zi'], ['Fire', '火', 'huǒ'],
-  ['Spring', '春天', 'chūn tiān'], ['Summer', '夏天', 'xià tiān'], ['Autumn', '秋天', 'qiū tiān'], ['Winter', '冬天', 'dōng tiān'],
-  // animals
-  ['Cat', '猫', 'māo'], ['Dog', '狗', 'gǒu'], ['Panda', '熊猫', 'xióng māo'], ['Dragon', '龙', 'lóng'],
-  ['Tiger', '老虎', 'lǎo hǔ'], ['Rabbit', '兔子', 'tù zi'], ['Bird', '鸟', 'niǎo'], ['Horse', '马', 'mǎ'],
-  // feelings and good wishes
-  ['Happy', '快乐', 'kuài lè'], ['Luck', '运气', 'yùn qì'], ['Love', '爱', 'ài'], ['Blessing', '福', 'fú'],
-  ['Peace', '平安', 'píng ān'], ['Health', '健康', 'jiàn kāng'], ['Hope', '希望', 'xī wàng'], ['Dream', '梦想', 'mèng xiǎng'],
-  ['Courage', '勇气', 'yǒng qì'], ['Patience', '耐心', 'nài xīn'], ['Smile', '微笑', 'wēi xiào'], ['Laugh', '笑', 'xiào'],
-  ['Kindness', '善良', 'shàn liáng'], ['Wisdom', '智慧', 'zhì huì'], ['Freedom', '自由', 'zì yóu'], ['Success', '成功', 'chéng gōng'],
-  ['Beautiful', '美丽', 'měi lì'], ['Heart', '心', 'xīn'], ['Good', '好', 'hǎo'], ['Fun', '好玩', 'hǎo wán'],
-  // everyday words
-  ['Hello', '你好', 'nǐ hǎo'], ['Thank You', '谢谢', 'xiè xie'], ['Goodbye', '再见', 'zài jiàn'], ['Chinese', '中文', 'zhōng wén'],
-  ['Today', '今天', 'jīn tiān'], ['Tomorrow', '明天', 'míng tiān'], ['Morning', '早上', 'zǎo shang'], ['Night', '晚上', 'wǎn shang'],
-  ['Sleep', '睡觉', 'shuì jiào'], ['Learn', '学习', 'xué xí'], ['Write', '写', 'xiě'], ['Book', '书', 'shū'],
-  ['Music', '音乐', 'yīn yuè'], ['Gift', '礼物', 'lǐ wù'], ['Journey', '旅行', 'lǚ xíng'], ['Road', '路', 'lù'],
-  ['Door', '门', 'mén'], ['Umbrella', '雨伞', 'yǔ sǎn'], ['Kite', '风筝', 'fēng zheng'], ['Lantern', '灯笼', 'dēng long'],
-  ['Red Envelope', '红包', 'hóng bāo'], ['Money', '钱', 'qián'], ['Big', '大', 'dà'], ['Small', '小', 'xiǎo'],
-  // colours and numbers
-  ['Red', '红色', 'hóng sè'], ['Gold', '金色', 'jīn sè'], ['Green', '绿色', 'lǜ sè'], ['Blue', '蓝色', 'lán sè'],
-  ['One', '一', 'yī'], ['Two', '二', 'èr'], ['Three', '三', 'sān'], ['Eight', '八', 'bā'],
-  ['Ten', '十', 'shí'], ['Hundred', '百', 'bǎi'],
-];
-const nextWord = makeBag(WORDS);
-function wrapLines(c, text, maxW) {
-  const words = text.split(' '); const lines = []; let line = '';
-  for (const w of words) { const t = line ? line + ' ' + w : w; if (c.measureText(t).width > maxW && line) { lines.push(line); line = w; } else line = t; }
-  if (line) lines.push(line); return lines;
-}
-function drawSlip(text) {
-  // front
+// what's printed on the slip: the fortune on the front, a Mandarin lesson and lucky numbers on the back
+let slipFortune = null, slipLesson = null;
+function drawSlip() {
+  const fortune = nextFortune(), lesson = nextLesson();
+  slipFortune = fortune; slipLesson = lesson;
   let c = slipFrontCv.getContext('2d');
   c.drawImage(paperCv, 0, 0);
-  let size = 104, lines;
-  for (; size > 50; size -= 4) {
-    c.font = `500 ${size}px ${SANS}`;
-    lines = wrapLines(c, text, TW * 0.84);
-    if (lines.length <= 2 && lines.length * size * 1.2 < TH * 0.7) break;
-  }
-  c.fillStyle = INK; c.textAlign = 'center'; c.textBaseline = 'middle';
-  const lh = size * 1.2, y0 = TH / 2 - (lines.length - 1) * lh / 2 + size * 0.04;
-  lines.forEach((l, i) => c.fillText(l, TW / 2, y0 + i * lh));
+  paintFront(c, fortune, TW, TH);
   slipFrontTex.needsUpdate = true;
   // back (mirrored so it reads correctly from behind)
   c = slipBackCv.getContext('2d');
@@ -958,16 +889,7 @@ function drawSlip(text) {
   c.drawImage(paperCv, 0, 0);
   c.setTransform(-1, 0, 0, 1, TW, 0);
   const nums = new Set(); while (nums.size < 6) nums.add(1 + Math.floor(Math.random() * 49));
-  const lucky = [...nums].sort((a, b) => a - b);
-  c.fillStyle = INK; c.textAlign = 'center'; c.textBaseline = 'middle';
-  const [en, zh, py] = nextWord();
-  c.font = `400 74px ${SANS}`;
-  c.fillText(`LEARN CHINESE - ${en}`, TW / 2, TH * 0.24);
-  c.font = `400 92px ${SANS}`;
-  c.fillText(`${zh}   ${py}`, TW / 2, TH * 0.5);
-  c.font = `500 66px ${SANS}`;
-  c.fillStyle = '#c4231c';
-  c.fillText(`Lucky Numbers  ${lucky.join(', ')}`, TW / 2, TH * 0.77);
+  paintBack(c, lesson, [...nums].sort((a, b) => a - b), TW, TH);
   c.setTransform(1, 0, 0, 1, 0, 0);
   slipBackTex.needsUpdate = true;
 }
@@ -1107,6 +1029,17 @@ const Sound = (() => {
 /* ------------------------------------------------------------------ app state */
 const hintEl = document.getElementById('hint');
 const againEl = document.getElementById('again');
+const sayEl = document.getElementById('say');
+const listenEl = document.getElementById('listen'), listenLabel = listenEl.querySelector('.label');
+// reading the fortune aloud: the button turns into "stop" while it plays
+let listening = false;
+function setListening(on) {
+  listening = on;
+  listenEl.classList.toggle('playing', on);
+  listenLabel.textContent = on ? 'stop' : 'listen to your fortune';
+}
+function stopListening() { if (listening) { stopSpeaking(); setListening(false); } }
+const coach = createCoach(document.getElementById('coach'), { onClose: () => setCursor('open') });
 const ringEl = document.getElementById('ring');
 const ringFill = ringEl.querySelector('.fill');
 const RING_C = 2 * Math.PI * 30;
@@ -1192,7 +1125,7 @@ function disposeCookie(c) {
 }
 function newCookie() {
   disposeCookie(app.cookie);
-  drawSlip(nextFortune());
+  drawSlip();
   app.cookie = createCookie();
   app.tension = 0; app.bodies = [];
   slip.active = false; slipGroup.visible = false; slip.flipped = false; slip.flip.x = slip.flip.target = 0; slip.flip.v = 0;
@@ -1490,7 +1423,7 @@ function pickPack(k) {
   if (app.state !== 'pile' || !k) return;
   app.picked = k; setState('picking');
   k.fromP = k.root.position.clone(); k.fromQ = k.root.quaternion.clone(); k.fromS = k.root.scale.x;
-  drawSlip(nextFortune());
+  drawSlip();
   Sound.crinkle(0.9); buzz(8);
   showHint(null, false); app.hintFor = null;
   setCamView('hero');
@@ -1636,6 +1569,7 @@ function snap() {
 }
 function flipSlip() {
   if (!slip.active || slip.leaving) return;
+  stopListening();
   slip.flipped = !slip.flipped;
   slip.flip.target = slip.flipped ? Math.PI : 0;
   slip.flip.v += slip.flipped ? 2 : -2;
@@ -1648,6 +1582,7 @@ function another() {
   setState('leaving');
   setCursor('open');
   againEl.classList.remove('show');
+  sayEl.classList.remove('show'); listenEl.classList.remove('show'); coach.close(); stopListening();
   showHint(null, false);
   slip.leaving = true;
   slip.vel.add(new V3(0, 2.5, -1));
@@ -1694,7 +1629,8 @@ function setCursor(kind) {
 }
 if (fineHand) {
   addEventListener('pointermove', (e) => {
-    if (e.pointerType === 'touch') { handEl.classList.remove('on'); return; }
+    // touch has no cursor, and the coach card uses the normal one
+    if (e.pointerType === 'touch' || e.target.closest?.('#coach')) { handEl.classList.remove('on'); return; }
     handX = e.clientX; handY = e.clientY; handEl.classList.add('on'); placeHand();
   }, { passive: true });
   addEventListener('pointerdown', (e) => { if (e.pointerType === 'touch') handEl.classList.remove('on'); else handEl.classList.add('down'); }, { passive: true });
@@ -1702,6 +1638,10 @@ if (fineHand) {
   document.documentElement.addEventListener('mouseleave', () => handEl.classList.remove('on'));
   againEl.addEventListener('pointerenter', () => { overButton = true; showHand(); });
   againEl.addEventListener('pointerleave', () => { overButton = false; showHand(); });
+  sayEl.addEventListener('pointerenter', () => { overButton = true; showHand(); });
+  listenEl.addEventListener('pointerenter', () => { overButton = true; showHand(); });
+  listenEl.addEventListener('pointerleave', () => { overButton = false; showHand(); });
+  sayEl.addEventListener('pointerleave', () => { overButton = false; showHand(); });
 }
 function setPointer(e) {
   pointer.x = e.clientX; pointer.y = e.clientY;
@@ -1800,7 +1740,7 @@ addEventListener('pointercancel', (e) => { endDrag(); endPress(); liftTouch(e); 
 addEventListener('blur', () => { endDrag(); endPress(); });
 addEventListener('contextmenu', (e) => e.preventDefault());
 addEventListener('keydown', (e) => {
-  if (e.repeat) return;
+  if (e.repeat || coach.isOpen()) return; // the coach handles its own keys
   if (e.code === 'Space' || e.code === 'Enter') {
     Sound.init();
     if (app.state === 'cracked') { e.preventDefault(); another(); return; }
@@ -1811,6 +1751,12 @@ addEventListener('keydown', (e) => {
 });
 addEventListener('keyup', (e) => { if (e.code === 'Space' && app.keyPress) { app.keyPress = false; endPress(); } });
 againEl.addEventListener('click', () => { Sound.init(); another(); });
+listenEl.addEventListener('click', () => {
+  if (listening) { stopListening(); return; }
+  if (!slipFortune) return;
+  if (speakParts(fortuneParts(slipFortune), () => setListening(false))) setListening(true);
+});
+sayEl.addEventListener('click', () => { if (slipLesson) { overButton = false; showHand(); stopListening(); coach.open(slipLesson); } });
 
 /* ------------------------------------------------------------------ layout */
 function layout() {
@@ -2019,6 +1965,13 @@ function frame(now) {
       if (!app.flipHinted && app.cracks === 1) { showHint('tap the fortune to turn it over', true); setTimeout(() => { if (app.state === 'cracked') showHint(null, false); }, 3800); }
     }
     if (app.state === 'cracked' && app.stateT > 1.5 && hintEl.classList.contains('show')) againEl.style.bottom = '';
+    // once the Learn Chinese side is facing you, offer to say it
+    const slipUp = app.state === 'cracked' && slip.active && !slip.leaving && !coach.isOpen();
+    const front = slipUp && !slip.flipped && slip.flip.x < 0.9 && slip.t > 1 && !!slipFortune;
+    const back = slipUp && slip.flipped && slip.flip.x > 2.2 && !!slipLesson;
+    listenEl.classList.toggle('show', front);
+    sayEl.classList.toggle('show', back);
+    document.body.classList.toggle('has-action', front || back);
   }
   if (app.state === 'leaving') {
     const k = smooth(0, 0.55, app.stateT);
@@ -2054,7 +2007,7 @@ cam.dist = cam.distGoal;
       new Promise((r) => setTimeout(r, 2500)),
     ]);
   } catch (e) {}
-  drawSlip(nextFortune());
+  drawSlip();
   buildPile();
   setState('pile'); setCamView('pile');
   cam.dir.copy(cam.dirGoal); cam.target.copy(cam.targetGoal); cam.dist = cam.distGoal;
