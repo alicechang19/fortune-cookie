@@ -87,45 +87,169 @@ const GOOD = {
   en: /Samantha|Alex|Ava|Allison|Susan|Daniel|Karen|Moira|Serena|Google|Aria|Jenny|Guy|Zira|Libby|Sonia/i,
 };
 const NOVELTY = /Eddy|Flo|Grandma|Grandpa|Reed|Rocko|Sandy|Shelley|Albert|Bad News|Bahh|Bells|Boing|Bubbles|Cellos|Good News|Jester|Organ|Superstar|Trinoids|Whisper|Wobble|Zarvox|Junior|Ralph|Fred|Kathy/i;
-function pickVoice(kind = 'zh') {
+// a voice that has actually spoken this visit goes first; one that failed goes last
+const worked = {}, failed = new Set();
+function rankVoices(kind = 'zh') {
   const pool = kind === 'zh'
     ? voices.filter((v) => /^(zh|cmn)/i.test(v.lang) && !/HK|yue/i.test(v.lang))
     : voices.filter((v) => /^en/i.test(v.lang));
   const home = kind === 'zh' ? /TW|Hant/i : /US|GB/i;
-  const score = (v) => (home.test(v.lang) ? 4 : 0) + (GOOD[kind].test(v.name) ? 2 : 0) - (NOVELTY.test(v.name) ? 5 : 0) + (v.localService ? 1 : 0);
-  return pool.sort((a, b) => score(b) - score(a))[0] || null;
+  // In Chrome, its own Google Mandarin voice comes first: Chrome has been seen to "play" Apple's Mandarin
+  // voices (Meijia) in a few milliseconds without a sound. Browsers without it (Safari, phones) use Meijia.
+  const chromeMandarin = (v) => kind === 'zh' && /^Google/.test(v.name);
+  const score = (v) => (v === worked[kind] ? 100 : 0) - (failed.has(v.voiceURI) ? 100 : 0) + (chromeMandarin(v) ? 3 : 0)
+    + (home.test(v.lang) ? 4 : 0) + (GOOD[kind].test(v.name) ? 2 : 0) - (NOVELTY.test(v.name) ? 5 : 0) + (v.localService ? 1 : 0);
+  return pool.sort((a, b) => score(b) - score(a));
 }
-export function canSpeak() { return !!synth; }
+function pickVoice(kind = 'zh') {
+  return rankVoices(kind)[0] || null;
+}
+export function canSpeak() { return !!synth || typeof Audio !== 'undefined'; }
+// ?debug in the page address logs every spoken part to the console
+const now = () => (typeof performance !== 'undefined' ? performance.now() : Date.now());
+const DEBUG = typeof location !== 'undefined' && /[?&]debug\b/.test(location.search);
+// On a local server, debug lines are also posted to /__speechlog so they can be read without the console.
+const debugLines = [];
+let debugSend = 0;
+const dbg = (...a) => {
+  if (!DEBUG) return;
+  console.log('[speech]', ...a);
+  debugLines.push(`${Math.round(now())}ms ${a.join(' ')}`);
+  if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) {
+    clearTimeout(debugSend);
+    debugSend = setTimeout(() => {
+      const body = debugLines.splice(0).join('\n');
+      fetch('/__speechlog', { method: 'POST', body }).catch(() => {});
+    }, 400);
+  }
+};
+if (DEBUG && synth) {
+  dbg('browser:', navigator.userAgent);
+  const list = () => dbg('voices:', voices.filter((v) => /^(zh|cmn|en)/i.test(v.lang)).map((v) => `${v.name} [${v.lang}${v.localService ? '' : ', online'}${v.default ? ', default' : ''}]`).join('; ') || 'none yet');
+  list(); synth.addEventListener?.('voiceschanged', list);
+}
 export function hasMandarinVoice() { return !!pickVoice('zh'); }
 
-// Only the newest request reports back: starting another one, or stopSpeaking(), silences the old callback.
-let speechId = 0;
-/** Reads parts in order, each in its own language: [{ text, lang: 'zh' | 'en', rate }]. */
+/* ------------------------------------------------------------------ recorded clips */
+// Chinese can come from recorded clips (assets/audio/<id>.mp3, made by tools/make-audio.mjs) instead of the
+// browser's voices, which some browsers lack or skip. clips.json lists the clips that exist; anything
+// missing falls back to the browser's voice.
+let clipSet = new Set();
+if (typeof fetch !== 'undefined' && typeof location !== 'undefined') {
+  fetch(new URL('./audio/clips.json', import.meta.url)).then((r) => (r.ok ? r.json() : [])).then((ids) => { clipSet = new Set(ids); dbg('clips:', clipSet.size); }).catch(() => {});
+}
+const player = typeof Audio !== 'undefined' ? new Audio() : null;
+if (player) player.preload = 'auto';
+const clipURL = (id) => new URL(`./audio/${id}.mp3`, import.meta.url).href;
+
+// Only the newest request plays on and reports back: starting another one, or stopSpeaking(), ends the old one.
+let speechId = 0, speaking = null, cancelledAt = -1e9; // `speaking` holds the live utterance so it isn't garbage-collected mid-sentence
+function cancelAll() { cancelledAt = now(); synth.cancel(); }
+/**
+ * Reads parts in order, each in its own language: [{ text, lang: 'zh' | 'en', rate, clip }].
+ * A part with a `clip` id plays that recording when there is one; otherwise the browser's voice reads it.
+ * Each part starts when the one before it ends. Queueing them all up front isn't reliable: right after
+ * cancel() (as when listening again mid-sentence), browsers can drop everything but the first part,
+ * and Chrome can drop the first part too.
+ */
 export function speakParts(parts, onend) {
-  if (!synth) return false;
-  synth.cancel();
+  if (!synth && !player) return false;
   const id = ++speechId;
-  let done = false;
-  const finish = () => { if (done || id !== speechId) return; done = true; onend && onend(); };
-  parts.forEach((p, i) => {
-    const u = new SpeechSynthesisUtterance(p.text);
-    const v = pickVoice(p.lang);
-    if (v) u.voice = v;
-    u.lang = v ? v.lang : (p.lang === 'zh' ? 'zh-TW' : 'en-US');
-    u.rate = p.rate || (p.lang === 'zh' ? 0.9 : 0.96);
-    if (i === parts.length - 1) u.onend = finish;
-    u.onerror = finish;
-    synth.speak(u);
-  });
+  if (player && !player.paused) player.pause();
+  // Chrome silently drops speech queued straight after cancel(), so only cancel when something is playing
+  const busy = !!synth && (synth.speaking || synth.pending);
+  if (busy) cancelAll();
+  const settle = busy || now() - cancelledAt < 150;
+  if (synth && synth.paused) synth.resume(); // Chrome can be left paused, which swallows everything after
+  const say = (i) => {
+    if (id !== speechId) return;
+    if (i >= parts.length) { speaking = null; onend && onend(); return; }
+    const p = parts[i];
+    let moved = false;
+    const next = () => { if (!moved && id === speechId) { moved = true; say(i + 1); } };
+    // Read with the device's voices. Some browsers accept a voice and then never say anything (desktop
+    // Chrome has skipped Mandarin this way), so if a voice doesn't start speaking, fails, or ends without
+    // a sound, cancel it and try the next one: up to three voices before moving on.
+    const voice = () => {
+      if (moved || id !== speechId) return;
+      if (!synth) { next(); return; }
+      const ranked = rankVoices(p.lang).slice(0, 3);
+      const attempt = (k) => {
+        if (moved || id !== speechId) return;
+        const v = ranked[k] || null;
+        const u = new SpeechSynthesisUtterance(p.text);
+        if (v) u.voice = v;
+        u.lang = v ? v.lang : (p.lang === 'zh' ? 'zh-TW' : 'en-US');
+        u.rate = p.rate || (p.lang === 'zh' ? 0.9 : 0.96);
+        const sentAt = now();
+        let started = false, startedAt = 0, settled = false, timer = 0;
+        // the shortest time this text could really take to say: about 5 Chinese characters or 15 letters a second, at most
+        const shortest = Math.max(250, ((p.text.match(/\p{Script=Han}/gu) || []).length * 200 + (p.text.match(/[a-z]/gi) || []).length * 25) / Math.max(1, u.rate) * 0.35);
+        const giveUp = (why) => {
+          if (settled || id !== speechId) return;
+          settled = true; clearTimeout(timer);
+          if (v) failed.add(v.voiceURI);
+          dbg(`${v ? v.name : 'default voice'} didn't speak (${why})`);
+          if (k + 1 < ranked.length) { cancelAll(); setTimeout(() => attempt(k + 1), 150); } else { if (synth.speaking || synth.pending) cancelAll(); next(); }
+        };
+        u.onstart = () => { started = true; startedAt = now(); clearTimeout(timer); dbg('start', p.text); };
+        u.onend = () => {
+          if (settled) return;
+          const took = now() - (started ? startedAt : sentAt);
+          // "finished" faster than anyone could say it: the voice played nothing
+          if (took < shortest) { giveUp(`finished in ${Math.round(took)}ms, too fast to have said it`); return; }
+          settled = true; clearTimeout(timer);
+          if (v) { worked[p.lang] = v; failed.delete(v.voiceURI); }
+          dbg('end', p.text); next();
+        };
+        u.onerror = (e) => {
+          dbg('error', e.error, p.text);
+          // cut off by a newer request (or by our own retry): just stop
+          if (settled || e.error === 'interrupted' || e.error === 'canceled') return;
+          giveUp(e.error);
+        };
+        timer = setTimeout(() => { if (!started) giveUp('never started'); }, 3000);
+        speaking = u;
+        dbg(`speak part ${i + 1}/${parts.length} with ${v ? `${v.name} (${v.lang})` : `no voice found, asking for ${u.lang}`}:`, p.text);
+        synth.speak(u);
+      };
+      attempt(0);
+    };
+    if (p.clip && player && clipSet.has(p.clip)) {
+      dbg(`play clip ${p.clip} for part ${i + 1}/${parts.length}:`, p.text);
+      // if the recording can't play, the browser's voice reads it instead
+      let fellBack = false; // the error event and the play() promise can both report the same failure
+      const fallback = (why) => { if (fellBack) return; fellBack = true; dbg('clip failed, using the voice:', why); voice(); };
+      player.onended = () => { dbg('end', p.text); next(); };
+      player.onerror = () => fallback(player.error && player.error.code);
+      player.src = clipURL(p.clip);
+      speaking = player;
+      const pr = player.play();
+      if (pr && pr.catch) pr.catch((e) => { if (e.name !== 'AbortError') fallback(e.name); });
+      return;
+    }
+    voice();
+  };
+  // the first part goes out within the tap (iOS wants that); after interrupting, give cancel() a moment to settle
+  dbg(`listen: ${parts.length} part(s)${synth ? `; speaking=${synth.speaking} pending=${synth.pending} paused=${synth.paused}` : ''}${busy ? ', cancelled what was playing' : ''}`);
+  if (settle) setTimeout(() => say(0), 150); else say(0);
   return true;
 }
 export function speak(text, rate = 0.9, onend) { return speakParts([{ text, lang: 'zh', rate }], onend); }
-export function stopSpeaking() { speechId++; if (synth) synth.cancel(); }
+export function stopSpeaking() {
+  speechId++; speaking = null;
+  if (player && !player.paused) player.pause();
+  if (synth) cancelAll();
+}
 
-/** What "listen" reads for the front of the slip: Chinese in a Mandarin voice, English in an English one. */
+/** What "listen" reads for the front of the slip: the Chinese (a recording when there is one), then the English. */
 export function fortuneParts(f) {
-  if (f.kind === 'proverb') return [{ text: f.zh, lang: 'zh', rate: 0.85 }, { text: f.meaning, lang: 'en' }];
-  return [{ text: f.zh, lang: 'zh', rate: 0.8 }, { text: f.en, lang: 'en' }]; // poem: the line and its translation, not the poet
+  const en = f.kind === 'proverb' ? f.meaning : f.en; // poems: the line and its translation, not the poet
+  return [{ text: f.zh, lang: 'zh', rate: f.kind === 'proverb' ? 0.85 : 0.8, clip: f.id }, { text: en, lang: 'en' }];
+}
+/** What "Listen" reads on the Learn Chinese card: the phrase, then its English translation. */
+export function lessonParts(l, rate = 0.8) {
+  return [{ text: l.zh, lang: 'zh', rate, clip: l.id }, { text: l.en, lang: 'en' }];
 }
 
 /* ------------------------------------------------------------------ the coach card */
@@ -149,7 +273,8 @@ export function createCoach(root, { onClose } = {}) {
     if (!current) return;
     const rate = Number(btn.dataset.rate);
     setPlaying(btn);
-    if (!speak(current.zh, rate, () => setPlaying(null))) setPlaying(null);
+    // like the front of the slip: the Chinese first, then its English translation
+    if (!speakParts(lessonParts(current, rate), () => setPlaying(null))) setPlaying(null);
   }
   function close() {
     if (root.hidden) return;

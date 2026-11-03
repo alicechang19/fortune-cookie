@@ -68,7 +68,7 @@ There are 100 fortunes and 100 Mandarin lessons, each kept in its own shuffled d
 - **Fronts:** 50 Chinese proverbs (P01–P50) and 50 lines of classical poetry with poet and title (C01–C50).
 - **Backs:** 50 *Things Your Chinese Teacher Won't Teach You* phrases (M01–M50) and 50 everyday Mandarin phrases (D01–D50), written in traditional characters.
 
-The slip text is laid out by `assets/slip-text.js`, which shrinks it to fit. The pronunciation coach (`assets/pronounce.js`) works out each syllable's tone from the pinyin, including how tones change in speech (two 3rd tones in a row, 不 and 一). Speech uses the device's own voices through the browser's speech API: a Taiwanese Mandarin voice for Chinese where there is one (never a Cantonese one) and an American or British voice for English. How it sounds depends on the voices the device has installed. The cookie's commentary for each entry (`says`) and the lesson categories and tones are kept in `fortunes.js` but aren't shown.
+The slip text is laid out by `assets/slip-text.js`, which shrinks it to fit. The pronunciation coach (`assets/pronounce.js`) works out each syllable's tone from the pinyin, including how tones change in speech (two 3rd tones in a row, 不 and 一). Speech uses the device's own voices through the browser's speech API: a Taiwanese Mandarin voice for Chinese where there is one (never a Cantonese one) and an American or British voice for English. The Chinese plays from recorded clips in `assets/audio/` when they're there, because some browsers (desktop Chrome on a Mac, for one) skip Mandarin with their built-in voices. The clips are made with a cloud text-to-speech voice (Azure's zh-TW HsiaoChen or Google's cmn-TW WaveNet); anything without a clip falls back to the device's voice. The cookie's commentary for each entry (`says`) and the lesson categories and tones are kept in `fortunes.js` but aren't shown.
 
 ## What's inside
 
@@ -79,6 +79,7 @@ assets/
   slip-text.js             lays out the text on each side of the slip
   pronounce.js             reading aloud and the "how do I say this?" pronunciation coach
   favicon.svg, favicon-32.png, apple-touch-icon.png
+  audio/                   recorded Chinese for each slip (<id>.mp3) and clips.json, the list of them
   cookie.glb               the cookie the page loads
 blender/
   build_cookie.py          turns the Tripo model into assets/cookie.glb
@@ -86,6 +87,8 @@ blender/
   fortune_cookie_render.glb   the original Tripo model
   procedural/              the earlier procedural Blender cookie
 docs/                      screenshots for this page
+tools/
+  make-audio.mjs           records the Chinese clips in assets/audio/
 ```
 
 - **`index.html`** uses three.js r170 from a CDN, custom rigid-body physics for the cookie halves, synthesised Web Audio for every crinkle, crackle and snap, and no frameworks.
@@ -94,3 +97,4 @@ docs/                      screenshots for this page
   ```sh
   blender -b --python blender/build_cookie.py -- blender/fortune_cookie_render.glb assets/cookie.glb blender/fortune_cookie.blend
   ```
+- **Recording the Chinese clips** after adding or changing fortunes: put `AZURE_SPEECH_KEY` and `AZURE_SPEECH_REGION`, or `GOOGLE_TTS_API_KEY`, in `~/.config/fortune-cookie/tts.env`, then run `node tools/make-audio.mjs` (it records whatever's missing; `--force` re-records everything, or name ids like `P12 M03`). Add `?debug` to the page address to log each spoken part in the console.
