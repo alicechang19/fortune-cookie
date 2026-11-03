@@ -1,0 +1,6 @@
+# only the page and its model are served; source assets stay in the repo
+*.blend
+*.blend1
+*.py
+fortune cookie render.glb
+.DS_Store

@@ -2,6 +2,8 @@
 
 A small three.js toy: a pile of wrapped fortune cookies rains onto the screen. Brush through them, pick one, tear the wrapper, hold to crack it open, and read your fortune.
 
+**Live:** https://fortune-cookie-five-pi.vercel.app
+
 ## Run it
 
 It's a single static page, but the model has to be loaded over HTTP:
@@ -11,6 +13,10 @@ python3 -m http.server 8931
 ```
 
 Then open http://localhost:8931/.
+
+## Deployment
+
+The site is hosted on [Vercel](https://fortune-cookie-five-pi.vercel.app) as a static site with no build step. `.vercelignore` limits the upload to `index.html` and `cookie.glb`, so the Blender files and the original render stay in the repo only.
 
 ## Files
 
