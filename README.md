@@ -1,12 +1,53 @@
-# Fortune Cookie
+# 🥠 Fortune Cookie
 
-A small three.js toy: a pile of wrapped fortune cookies rains onto the screen. Brush through them, pick one, tear the wrapper, hold to crack it open, and read your fortune.
+**Crack open a little luck.**
 
-**Live:** https://fortune-cookie-five-pi.vercel.app
+👉 **[Play it here: fortune-cookie-five-pi.vercel.app](https://fortune-cookie-five-pi.vercel.app)**
 
-## Run it
+![A cookie with its fortune peeking out](docs/cookie.jpg)
 
-It's a single static page, but the model has to be loaded over HTTP:
+A hundred wrapped fortune cookies come tumbling down the screen and land in a crinkly heap. Run your hand through the pile to hear the plastic rustle, pick the one that's calling to you, tear it open, and squeeze until it *snaps*. Out flutters your fortune. Flip it over for your lucky numbers (printed in red, of course 🧧) and a word of Chinese to learn.
+
+It's a tiny, unhurried ritual, like the moment after dinner when the check comes with a little plate of cookies and everyone at the table reads theirs out loud.
+
+![A heap of wrapped fortune cookies](docs/pile.jpg)
+
+## How to play
+
+| | |
+| --- | --- |
+| 🫳 **Brush** | Sweep across the pile and the packs shuffle and rustle under your hand |
+| ✊ **Pick** | Click a pack and it comes to you |
+| 🤏 **Tear** | Tap to rip the wrapper open |
+| 🫱 **Turn** | Drag to spin the cookie and admire it |
+| 🤲 **Crack** | Press and hold. Feel it tremble, then *snap* |
+| 👆 **Flip** | Tap the fortune to find your lucky numbers and a Chinese word to learn |
+| 👉 **Again** | "another cookie" in the top-right corner. There's always another |
+
+Keyboard works too: **Space** to pick, tear and crack, **F** to flip, **Enter** for another.
+
+![A cracked fortune cookie and its fortune](docs/fortune.jpg)
+
+## 🏮 A little cookie with a big story
+
+The fortune cookie is a wonderfully Asian American creation, and its story is a love letter to the communities that built it.
+
+Its roots are usually traced to Japan, to **tsujiura senbei**: crisp, toasty crackers from the Kyoto area, folded around a tiny paper fortune and baked in hand-held irons. Japanese immigrants brought the tradition to California around the turn of the 20th century. **Makoto Hagiwara**, who looked after San Francisco's Japanese Tea Garden, is often credited with serving them to visitors, and Japanese American bakeries made them by hand.
+
+When Japanese Americans were forcibly removed and incarcerated during World War II, **Chinese American** bakers and restaurateurs carried the cookie forward. They scaled it up and made it the sweet send-off to a meal at Chinese restaurants across the country. Today billions are folded every year, and the cookie has become a beloved, shared piece of Asian American culture: a little bit Japanese, a little bit Chinese, and wholly American.
+
+A few of the traditions tucked into this project:
+
+- **福 (fú, "good fortune")** appears on every wrapper's badge. At Lunar New Year it's often hung *upside down*, because "upside down" (倒, dào) sounds like "arrived" (到, dào). Fortune has arrived!
+- **幸运饼 (xìngyùn bǐng)** means "lucky cookie," and you'll see it printed on the wrapper.
+- **Red** is the colour of luck and celebration, which is why the lucky numbers are printed in red.
+- **Learn Chinese:** on the back of every fortune you'll find a word with its characters and pinyin, just like the real slips.
+
+So go ahead, take one. It's good luck to read it out loud. 🥢
+
+## Run it locally
+
+It's one static page with no build step, but the model has to load over HTTP:
 
 ```sh
 python3 -m http.server 8931
@@ -16,16 +57,17 @@ Then open http://localhost:8931/.
 
 ## Deployment
 
-The site is hosted on [Vercel](https://fortune-cookie-five-pi.vercel.app) as a static site with no build step. `.vercelignore` limits the upload to `index.html` and `cookie.glb`, so the Blender files and the original render stay in the repo only.
+The site is hosted on [Vercel](https://fortune-cookie-five-pi.vercel.app) as a static site with no build step. `.vercelignore` limits the upload to `index.html` and `cookie.glb`, so the Blender files, screenshots and the original render stay in the repo only.
 
-## Files
+## What's inside
 
-- `index.html`: the whole app (three.js r170 from a CDN, no build step).
+- `index.html`: the whole app. It uses three.js r170 from a CDN, custom rigid-body physics for the cookie halves, synthesised Web Audio for every crinkle, crackle and snap, and no frameworks.
 - `cookie.glb`: the cookie used in the app. It's decimated, hollowed and cracked into two halves, and includes light copies for the pile.
 - `fortune cookie render.glb`: the original Tripo model.
-- `build_cookie.py`: Blender script that turns the Tripo model into `cookie.glb`:
+- `build_cookie.py`: the Blender script that turns the Tripo model into `cookie.glb`:
   ```sh
   blender -b --python build_cookie.py -- "fortune cookie render.glb" cookie.glb fortune_cookie.blend
   ```
 - `fortune_cookie.blend`: the Tripo cookie and its game halves in Blender.
 - `fortune_cookie.py`, `fortune_cookie_procedural.blend`: the earlier procedural Blender cookie.
+- `docs/`: screenshots for this page.
