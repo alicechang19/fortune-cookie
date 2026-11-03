@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="dough" x1="0" y1="0" x2="0.25" y2="1">
+      <stop offset="0" stop-color="#fadb92"/>
+      <stop offset="0.6" stop-color="#ecb45c"/>
+      <stop offset="1" stop-color="#d08a3a"/>
+    </linearGradient>
+  </defs>
+  <!-- the fortune, tucked in the fold and poking out to the right -->
+  <g transform="rotate(10 32 48)">
+    <rect x="30" y="45.5" width="31" height="5.5" rx="0.8" fill="#fdfcf7" stroke="#b9ad98" stroke-width="1"/>
+    <line x1="47" y1="48.25" x2="57" y2="48.25" stroke="#c4231c" stroke-width="1.5" stroke-linecap="round"/>
+  </g>
+  <!-- cookie: a wide arch whose wings curl down and in to points, pinched at the centre fold -->
+  <path d="M11 53 C1 47 0 31 8 22.5 C14 16 23 12 32 12 C41 12 50 16 56 22.5 C64 31 63 47 53 53 C50 46 44.5 42.5 39 44 C36 45 34 47.5 32 51 C30 47.5 28 45 25 44 C19.5 42.5 14 46 11 53 Z"
+        fill="url(#dough)" stroke="#a5652a" stroke-width="2.2" stroke-linejoin="round"/>
+  <!-- right wing turns away from the light -->
+  <path d="M32 12 C41 12 50 16 56 22.5 C64 31 63 47 53 53 C50 46 44.5 42.5 39 44 C36 45 34 47.5 32 51 C35.5 39 36 24 32 12 Z"
+        fill="#9a5a1e" opacity="0.2"/>
+  <!-- rims of the hollow underneath -->
+  <path d="M13 50 C16 45.5 20 44 25 45.3 C28 46.3 30 48 32 50.5 C34 48 36 46.3 39 45.3 C44 44 48 45.5 51 50"
+        fill="none" stroke="#b8732c" stroke-width="2" stroke-linecap="round"/>
+  <!-- centre fold -->
+  <path d="M32 50 C35.5 39 36 24 32 13" fill="none" stroke="#b9772f" stroke-width="1.8" stroke-linecap="round" opacity="0.8"/>
+  <!-- highlight -->
+  <path d="M9.5 34 C10 26 15 19.5 23 16" fill="none" stroke="#fff4d6" stroke-width="2.6" stroke-linecap="round" opacity="0.85"/>
+</svg>
