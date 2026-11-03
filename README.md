@@ -63,9 +63,9 @@ The site is hosted on [Vercel](https://fortune-cookie-five-pi.vercel.app) as a s
 
 ## What's on the slips
 
-There are 65 fortunes and 100 Mandarin lessons, each kept in its own shuffled deck so you won't see a repeat until you've seen them all. They live in **`assets/fortunes.js`**, so edit them there:
+There are 100 fortunes and 100 Mandarin lessons, each kept in its own shuffled deck so you won't see a repeat until you've seen them all. They live in **`assets/fortunes.js`**, so edit them there:
 
-- **Fronts:** 40 Chinese proverbs (P01–P40) and 25 lines of classical poetry with poet and title (C01–C25).
+- **Fronts:** 50 Chinese proverbs (P01–P50) and 50 lines of classical poetry with poet and title (C01–C50).
 - **Backs:** 50 *Things Your Chinese Teacher Won't Teach You* phrases (M01–M50) and 50 everyday Mandarin phrases (D01–D50), written in traditional characters.
 
 The slip text is laid out by `assets/slip-text.js`, which shrinks it to fit. The pronunciation coach (`assets/pronounce.js`) works out each syllable's tone from the pinyin, including how tones change in speech (two 3rd tones in a row, 不 and 一). Speech uses the device's own voices through the browser's speech API: a Taiwanese Mandarin voice for Chinese where there is one (never a Cantonese one) and an American or British voice for English. How it sounds depends on the voices the device has installed. The cookie's commentary for each entry (`says`) and the lesson categories and tones are kept in `fortunes.js` but aren't shown.

@@ -1,5 +1,5 @@
 // Everything printed on the fortune slips.
-// Front of the slip: PROVERBS (P) and POEMS (C), 65 in all.
+// Front of the slip: PROVERBS (P) and POEMS (C), 100 in all.
 // Back of the slip: MISCHIEF (M) and EVERYDAY (D) Mandarin lessons, 100 in all, plus lucky numbers.
 // Chinese is in traditional characters.
 
@@ -45,6 +45,16 @@ export const PROVERBS = [
   { id: 'P38', zh: '禍不單行', py: 'Huò bù dān xíng', meaning: 'Misfortunes tend to come together.', says: 'Apparently your problems brought friends.' },
   { id: 'P39', zh: '笨鳥先飛', py: 'Bèn niǎo xiān fēi', meaning: 'Those with less natural ability can succeed by starting earlier.', says: 'Being early is a surprisingly powerful personality trait.' },
   { id: 'P40', zh: '遠水救不了近火', py: 'Yuǎn shuǐ jiù bù liǎo jìn huǒ', meaning: 'Distant help cannot solve an immediate problem.', says: "A five-year plan won't fix today's missing charger." },
+  { id: 'P41', zh: '臨時抱佛腳', py: 'Lín shí bào fó jiǎo', meaning: 'Scrambling to prepare at the last minute.', says: 'The deadline is tomorrow. The cookie can hear you praying.' },
+  { id: 'P42', zh: '半途而廢', py: 'Bàn tú ér fèi', meaning: 'Giving up halfway through.', says: 'Your unfinished hobbies have formed a support group.' },
+  { id: 'P43', zh: '不入虎穴，焉得虎子', py: 'Bú rù hǔ xué, yān dé hǔ zǐ', meaning: 'Nothing ventured, nothing gained.', says: 'Send the email. The tiger is probably friendlier than you think.' },
+  { id: 'P44', zh: '千里之行，始於足下', py: 'Qiān lǐ zhī xíng, shǐ yú zú xià', meaning: 'A journey of a thousand miles begins with a single step.', says: 'Step one: get off the couch. Step two: see step one.' },
+  { id: 'P45', zh: '好事多磨', py: 'Hǎo shì duō mó', meaning: 'Good things come through many trials.', says: "The delay is part of the story you'll tell later." },
+  { id: 'P46', zh: '狐假虎威', py: 'Hú jiǎ hǔ wēi', meaning: "Borrowing someone else's power to intimidate others.", says: 'Mentioning your manager every five minutes is not a personality.' },
+  { id: 'P47', zh: '杞人憂天', py: 'Qǐ rén yōu tiān', meaning: 'Worrying about things that will never happen.', says: 'The sky is fine. Go to bed.' },
+  { id: 'P48', zh: '老馬識途', py: 'Lǎo mǎ shí tú', meaning: 'Experience knows the way.', says: "Ask whoever's been here longest. They know where the good snacks are." },
+  { id: 'P49', zh: '磨刀不誤砍柴工', py: 'Mó dāo bú wù kǎn chái gōng', meaning: 'Time spent preparing is not time wasted.', says: 'Setting up your tools first is not procrastination. Usually.' },
+  { id: 'P50', zh: '對症下藥', py: 'Duì zhèng xià yào', meaning: 'Find the real cause before choosing the cure.', says: 'Turning it off and on again is not a diagnosis.' },
 ];
 
 // Category B: classical Chinese poetry. The English renderings were written for this collection.
@@ -75,6 +85,31 @@ export const POEMS = [
   { id: 'C23', zh: '不識廬山真面目，只緣身在此山中。', en: "I cannot see Mount Lu's true face because I am standing within it.", poet: 'Su Shi', title: '題西林壁', titleEn: 'Written on the Wall of West Forest Temple' },
   { id: 'C24', zh: '此情無計可消除，才下眉頭，卻上心頭。', en: 'There is no way to dispel this longing; it leaves my brow only to return to my heart.', poet: 'Li Qingzhao', title: '一剪梅', titleEn: 'Yi Jian Mei' },
   { id: 'C25', zh: '停車坐愛楓林晚，霜葉紅於二月花。', en: 'I stop my carriage to admire the evening maple grove; frost-touched leaves glow redder than spring flowers.', poet: 'Du Mu', title: '山行', titleEn: 'Mountain Journey' },
+  { id: 'C26', zh: '誰言寸草心，報得三春暉。', en: "Who says a blade of grass can ever repay the warmth of spring's sunlight?", poet: 'Meng Jiao', title: '遊子吟', titleEn: "The Wanderer's Song" },
+  { id: 'C27', zh: '獨在異鄉為異客，每逢佳節倍思親。', en: 'Alone in a strange land, a stranger; at every festival I miss my family twice as much.', poet: 'Wang Wei', title: '九月九日憶山東兄弟', titleEn: 'Remembering My Brothers on the Double Ninth' },
+  { id: 'C28', zh: '勸君更盡一杯酒，西出陽關無故人。', en: "Have one more cup of wine, my friend; west of Yang Pass you'll find no old friends.", poet: 'Wang Wei', title: '送元二使安西', titleEn: 'Seeing Off Yuan Er to Anxi' },
+  { id: 'C29', zh: '桃花潭水深千尺，不及汪倫送我情。', en: "Peach Blossom Pool is a thousand feet deep, yet not as deep as Wang Lun's farewell.", poet: 'Li Bai', title: '贈汪倫', titleEn: 'For Wang Lun' },
+  { id: 'C30', zh: '孤帆遠影碧空盡，唯見長江天際流。', en: "The lone sail fades into the blue; I see only the great river flowing to the sky's edge.", poet: 'Li Bai', title: '黃鶴樓送孟浩然之廣陵', titleEn: 'Seeing Off Meng Haoran at Yellow Crane Tower' },
+  { id: 'C31', zh: '國破山河在，城春草木深。', en: 'The nation is broken, but mountains and rivers remain; spring comes to the city, and the grass grows deep.', poet: 'Du Fu', title: '春望', titleEn: 'Spring View' },
+  { id: 'C32', zh: '兩個黃鸝鳴翠柳，一行白鷺上青天。', en: 'Two orioles sing in the green willows; a line of white egrets climbs the blue sky.', poet: 'Du Fu', title: '絕句', titleEn: 'Quatrain' },
+  { id: 'C33', zh: '借問酒家何處有，牧童遙指杏花村。', en: 'I ask where I might find a tavern; a cowherd points far off to Apricot Blossom Village.', poet: 'Du Mu', title: '清明', titleEn: 'Qingming' },
+  { id: 'C34', zh: '南朝四百八十寺，多少樓臺煙雨中。', en: 'Four hundred and eighty temples of the Southern Dynasties; how many towers stand in the misty rain.', poet: 'Du Mu', title: '江南春', titleEn: 'Spring in Jiangnan' },
+  { id: 'C35', zh: '姑蘇城外寒山寺，夜半鐘聲到客船。', en: "From Cold Mountain Temple outside Suzhou, the midnight bell reaches the traveler's boat.", poet: 'Zhang Ji', title: '楓橋夜泊', titleEn: 'Night Mooring at Maple Bridge' },
+  { id: 'C36', zh: '羌笛何須怨楊柳，春風不度玉門關。', en: 'Why should the flute lament the willows? The spring wind never crosses Jade Gate Pass.', poet: 'Wang Zhihuan', title: '涼州詞', titleEn: 'Song of Liangzhou' },
+  { id: 'C37', zh: '飛流直下三千尺，疑是銀河落九天。', en: 'The torrent plunges three thousand feet, as if the Milky Way were falling from the heavens.', poet: 'Li Bai', title: '望廬山瀑布', titleEn: 'Viewing the Waterfall at Mount Lu' },
+  { id: 'C38', zh: '洛陽親友如相問，一片冰心在玉壺。', en: 'If friends in Luoyang ask after me, say my heart is still ice in a jade pot.', poet: 'Wang Changling', title: '芙蓉樓送辛漸', titleEn: 'Farewell to Xin Jian at Hibiscus Tower' },
+  { id: 'C39', zh: '兒童相見不相識，笑問客從何處來。', en: 'The children see me but do not know me; smiling, they ask where the stranger has come from.', poet: 'He Zhizhang', title: '回鄉偶書', titleEn: 'Written on Returning Home' },
+  { id: 'C40', zh: '不知細葉誰裁出，二月春風似剪刀。', en: 'Who cut these slender leaves? The spring wind of the second month, sharp as scissors.', poet: 'He Zhizhang', title: '詠柳', titleEn: 'Ode to the Willow' },
+  { id: 'C41', zh: '欲把西湖比西子，淡妝濃抹總相宜。', en: 'West Lake is like the beauty Xizi: in light makeup or heavy, she is always lovely.', poet: 'Su Shi', title: '飲湖上初晴後雨', titleEn: 'Drinking on the Lake, Sun Then Rain' },
+  { id: 'C42', zh: '竹外桃花三兩枝，春江水暖鴨先知。', en: 'Beyond the bamboo, a few peach branches bloom; the ducks are first to know the river has warmed.', poet: 'Su Shi', title: '惠崇春江晚景', titleEn: 'Spring River at Dusk' },
+  { id: 'C43', zh: '問渠那得清如許，為有源頭活水來。', en: 'How is the pond so clear? Because fresh water keeps flowing in from its source.', poet: 'Zhu Xi', title: '觀書有感', titleEn: 'Thoughts on Reading' },
+  { id: 'C44', zh: '春風又綠江南岸，明月何時照我還。', en: 'The spring wind turns the southern shore green again; when will the bright moon light my way home?', poet: 'Wang Anshi', title: '泊船瓜洲', titleEn: 'Mooring at Guazhou' },
+  { id: 'C45', zh: '夕陽無限好，只是近黃昏。', en: 'The setting sun is endlessly beautiful, only it is close to dusk.', poet: 'Li Shangyin', title: '登樂遊原', titleEn: 'Climbing Leyou Plain' },
+  { id: 'C46', zh: '春蠶到死絲方盡，蠟炬成灰淚始乾。', en: 'The silkworm spins until it dies; the candle weeps until it turns to ash.', poet: 'Li Shangyin', title: '無題', titleEn: 'Untitled' },
+  { id: 'C47', zh: '日出江花紅勝火，春來江水綠如藍。', en: 'At sunrise the river flowers glow redder than fire; in spring the river runs green as indigo.', poet: 'Bai Juyi', title: '憶江南', titleEn: 'Remembering Jiangnan' },
+  { id: 'C48', zh: '前不見古人，後不見來者。', en: 'Before me, none of the ancients; behind me, none of those to come.', poet: "Chen Zi'ang", title: '登幽州臺歌', titleEn: 'Climbing Youzhou Terrace' },
+  { id: 'C49', zh: '忽如一夜春風來，千樹萬樹梨花開。', en: 'As if a spring wind came overnight, a thousand trees burst into pear blossom.', poet: 'Cen Shen', title: '白雪歌送武判官歸京', titleEn: 'Song of White Snow' },
+  { id: 'C50', zh: '星垂平野闊，月湧大江流。', en: 'Stars hang low over the wide plain; the moon surges on the great river.', poet: 'Du Fu', title: '旅夜書懷', titleEn: 'Thoughts on a Night Journey' },
 ];
 
 // Category D: Things Your Chinese Teacher Won't Teach You. Mandarin lessons, not fortunes.
