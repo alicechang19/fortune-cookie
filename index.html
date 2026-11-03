@@ -786,12 +786,81 @@ const FORTUNES = [
   'An old friend is thinking of you. Say hello.',
   'Good things are crunchy on the outside.',
   'You already know which way to go.',
+  'A cup of tea shared today will become a story told for years.',
+  'The right people will find you without a map.',
+  'Your laughter is louder than your doubts.',
+  'Tomorrow will be kinder than you expect.',
+  'A pocket you forgot about holds a small treasure.',
+  'Every good thing begins as a maybe.',
+  'You will soon be asked for advice. Trust what you say.',
+  'The slow road has the best views.',
+  'Write it down. Future you will thank you.',
+  'A kind word you gave away is on its way back.',
+  'Your plans are about to grow wings.',
+  'The sun will find you even on a cloudy day.',
+  'A surprise invitation will be worth the yes.',
+  'Someone will remember your name and smile.',
+  'Good news travels slowly, but it is travelling to you.',
+  'Someone will borrow your idea and make you proud.',
+  'A messy kitchen is proof of a happy home.',
+  'Your second wind is closer than you think.',
+  'Trust the friend who brings snacks.',
+  'You will learn something new and tell everyone about it.',
+  'The best adventures start with a wrong bus.',
+  'Say yes to the dumplings.',
+  'A tidy drawer will bring you unreasonable peace.',
+  'Your stubbornness will finally pay off.',
+  'Look twice at the person who makes you laugh.',
+  'There is a nap in your near future.',
+  'A lost thing will turn up exactly when you need it.',
+  'Your smile is someone’s favourite weather.',
+  'Plant the seed. Forget the date. Enjoy the surprise.',
+  'The world is wide and you are welcome in it.',
+  'You will soon taste something unforgettable.',
+  'Small kindnesses make the longest memories.',
+  'A good book will find you at the right time.',
+  'Let the kettle sing. Good news follows.',
+  'Your heart knows the way home.',
+  'A gentle no will protect a happy yes.',
+  'Someone far away is telling a story about you.',
+  'Even the moon has phases. Be easy on yourself.',
+  'You will fix something today with your own two hands.',
+  'A long walk will answer a short question.',
+  'Your grandmother would approve of what you are about to do.',
+  'Abundance arrives in small, frequent parcels.',
+  'Share the last bite. Luck likes generosity.',
+  'A new friendship begins with a shared umbrella.',
+  'Today you will notice something beautiful nobody else saw.',
+  'Keep your door open. Good company is on the way.',
+  'The question you fear asking has a happy answer.',
+  'Call home. Someone has good news.',
+  'You will be lucky in small ways all week.',
+  'Do the brave thing first, then have dessert.',
+  'Your favourite chapter has not been written yet.',
+  'A red envelope of good luck is coming your way.',
+  'The stars approve of your new direction.',
+  'Patience: the dumplings are worth the wait.',
+  'Change your route home and meet your luck.',
+  'What feels like an ending is a fold, not a tear.',
+  'You will soon have a reason to dance in the kitchen.',
+  'Water the plant. Water yourself too.',
+  'An honest friend is worth more than jade.',
+  'You will make someone’s ordinary day extraordinary.',
+  'The best is still warm from the oven.',
+  'Your calm will open a door that force could not.',
+  'A happy accident is scheduled for this week.',
+  'You are exactly where your next chapter begins.',
+  'Do not fear the crack — that is how the fortune gets out.',
 ];
-let fortuneBag = [];
-function nextFortune() {
-  if (!fortuneBag.length) { fortuneBag = FORTUNES.slice(); for (let i = fortuneBag.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [fortuneBag[i], fortuneBag[j]] = [fortuneBag[j], fortuneBag[i]]; } }
-  return fortuneBag.pop();
+// draw without repeats: shuffle the whole list, deal it out, reshuffle when empty
+function makeBag(items) {
+  let bag = [];
+  return () => {
+    if (!bag.length) { bag = items.slice(); for (let i = bag.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [bag[i], bag[j]] = [bag[j], bag[i]]; } }
+    return bag.pop();
+  };
 }
+const nextFortune = makeBag(FORTUNES);
 const SW = 2.3, SH = 0.56;
 const TW = 2048, TH = Math.round(TW * SH / SW);
 const slipFrontCv = document.createElement('canvas'); slipFrontCv.width = TW; slipFrontCv.height = TH;
@@ -820,7 +889,47 @@ const paperCv = (() => {
 })();
 const INK = '#1d1c1a';
 const SANS = 'Helvetica Neue, Helvetica, Arial, sans-serif';
-const WORDS = [['Friend', '朋友', 'péng yǒu'], ['Moon', '月亮', 'yuè liang'], ['Tea', '茶', 'chá'], ['Luck', '运气', 'yùn qì'], ['Cookie', '饼干', 'bǐng gān'], ['Happy', '快乐', 'kuài lè'], ['Water', '水', 'shuǐ'], ['Home', '家', 'jiā']];
+// "Learn Chinese" words for the back of the slip: [English, simplified characters, pinyin]
+const WORDS = [
+  // people
+  ['Friend', '朋友', 'péng yǒu'], ['Family', '家人', 'jiā rén'], ['Mom', '妈妈', 'mā ma'], ['Dad', '爸爸', 'bà ba'],
+  ['Grandma', '奶奶', 'nǎi nai'], ['Grandpa', '爷爷', 'yé ye'], ['Big Sister', '姐姐', 'jiě jie'], ['Little Brother', '弟弟', 'dì di'],
+  ['Child', '孩子', 'hái zi'], ['Teacher', '老师', 'lǎo shī'], ['Person', '人', 'rén'], ['Home', '家', 'jiā'],
+  // food and drink
+  ['Tea', '茶', 'chá'], ['Cookie', '饼干', 'bǐng gān'], ['Water', '水', 'shuǐ'], ['Rice', '米饭', 'mǐ fàn'],
+  ['Noodles', '面条', 'miàn tiáo'], ['Dumpling', '饺子', 'jiǎo zi'], ['Bun', '包子', 'bāo zi'], ['Egg', '鸡蛋', 'jī dàn'],
+  ['Fish', '鱼', 'yú'], ['Tofu', '豆腐', 'dòu fu'], ['Soup', '汤', 'tāng'], ['Apple', '苹果', 'píng guǒ'],
+  ['Orange', '橙子', 'chéng zi'], ['Peach', '桃子', 'táo zi'], ['Watermelon', '西瓜', 'xī guā'], ['Mooncake', '月饼', 'yuè bǐng'],
+  ['Sugar', '糖', 'táng'], ['Milk Tea', '奶茶', 'nǎi chá'], ['Chopsticks', '筷子', 'kuài zi'], ['Delicious', '好吃', 'hǎo chī'],
+  ['Eat', '吃', 'chī'], ['Drink', '喝', 'hē'],
+  // nature and seasons
+  ['Moon', '月亮', 'yuè liang'], ['Sun', '太阳', 'tài yáng'], ['Star', '星星', 'xīng xing'], ['Sky', '天空', 'tiān kōng'],
+  ['Cloud', '云', 'yún'], ['Rain', '雨', 'yǔ'], ['Snow', '雪', 'xuě'], ['Wind', '风', 'fēng'],
+  ['Mountain', '山', 'shān'], ['River', '河', 'hé'], ['Sea', '海', 'hǎi'], ['Tree', '树', 'shù'],
+  ['Flower', '花', 'huā'], ['Bamboo', '竹子', 'zhú zi'], ['Fire', '火', 'huǒ'],
+  ['Spring', '春天', 'chūn tiān'], ['Summer', '夏天', 'xià tiān'], ['Autumn', '秋天', 'qiū tiān'], ['Winter', '冬天', 'dōng tiān'],
+  // animals
+  ['Cat', '猫', 'māo'], ['Dog', '狗', 'gǒu'], ['Panda', '熊猫', 'xióng māo'], ['Dragon', '龙', 'lóng'],
+  ['Tiger', '老虎', 'lǎo hǔ'], ['Rabbit', '兔子', 'tù zi'], ['Bird', '鸟', 'niǎo'], ['Horse', '马', 'mǎ'],
+  // feelings and good wishes
+  ['Happy', '快乐', 'kuài lè'], ['Luck', '运气', 'yùn qì'], ['Love', '爱', 'ài'], ['Blessing', '福', 'fú'],
+  ['Peace', '平安', 'píng ān'], ['Health', '健康', 'jiàn kāng'], ['Hope', '希望', 'xī wàng'], ['Dream', '梦想', 'mèng xiǎng'],
+  ['Courage', '勇气', 'yǒng qì'], ['Patience', '耐心', 'nài xīn'], ['Smile', '微笑', 'wēi xiào'], ['Laugh', '笑', 'xiào'],
+  ['Kindness', '善良', 'shàn liáng'], ['Wisdom', '智慧', 'zhì huì'], ['Freedom', '自由', 'zì yóu'], ['Success', '成功', 'chéng gōng'],
+  ['Beautiful', '美丽', 'měi lì'], ['Heart', '心', 'xīn'], ['Good', '好', 'hǎo'], ['Fun', '好玩', 'hǎo wán'],
+  // everyday words
+  ['Hello', '你好', 'nǐ hǎo'], ['Thank You', '谢谢', 'xiè xie'], ['Goodbye', '再见', 'zài jiàn'], ['Chinese', '中文', 'zhōng wén'],
+  ['Today', '今天', 'jīn tiān'], ['Tomorrow', '明天', 'míng tiān'], ['Morning', '早上', 'zǎo shang'], ['Night', '晚上', 'wǎn shang'],
+  ['Sleep', '睡觉', 'shuì jiào'], ['Learn', '学习', 'xué xí'], ['Write', '写', 'xiě'], ['Book', '书', 'shū'],
+  ['Music', '音乐', 'yīn yuè'], ['Gift', '礼物', 'lǐ wù'], ['Journey', '旅行', 'lǚ xíng'], ['Road', '路', 'lù'],
+  ['Door', '门', 'mén'], ['Umbrella', '雨伞', 'yǔ sǎn'], ['Kite', '风筝', 'fēng zheng'], ['Lantern', '灯笼', 'dēng long'],
+  ['Red Envelope', '红包', 'hóng bāo'], ['Money', '钱', 'qián'], ['Big', '大', 'dà'], ['Small', '小', 'xiǎo'],
+  // colours and numbers
+  ['Red', '红色', 'hóng sè'], ['Gold', '金色', 'jīn sè'], ['Green', '绿色', 'lǜ sè'], ['Blue', '蓝色', 'lán sè'],
+  ['One', '一', 'yī'], ['Two', '二', 'èr'], ['Three', '三', 'sān'], ['Eight', '八', 'bā'],
+  ['Ten', '十', 'shí'], ['Hundred', '百', 'bǎi'],
+];
+const nextWord = makeBag(WORDS);
 function wrapLines(c, text, maxW) {
   const words = text.split(' '); const lines = []; let line = '';
   for (const w of words) { const t = line ? line + ' ' + w : w; if (c.measureText(t).width > maxW && line) { lines.push(line); line = w; } else line = t; }
@@ -846,15 +955,16 @@ function drawSlip(text) {
   c.drawImage(paperCv, 0, 0);
   c.setTransform(-1, 0, 0, 1, TW, 0);
   const nums = new Set(); while (nums.size < 6) nums.add(1 + Math.floor(Math.random() * 49));
+  const lucky = [...nums].sort((a, b) => a - b);
   c.fillStyle = INK; c.textAlign = 'center'; c.textBaseline = 'middle';
-  const [en, zh, py] = WORDS[Math.floor(Math.random() * WORDS.length)];
+  const [en, zh, py] = nextWord();
   c.font = `400 74px ${SANS}`;
   c.fillText(`LEARN CHINESE - ${en}`, TW / 2, TH * 0.24);
   c.font = `400 92px ${SANS}`;
   c.fillText(`${zh}   ${py}`, TW / 2, TH * 0.5);
   c.font = `500 66px ${SANS}`;
   c.fillStyle = '#c4231c';
-  c.fillText(`Lucky Numbers  ${[...nums].join(', ')}`, TW / 2, TH * 0.77);
+  c.fillText(`Lucky Numbers  ${lucky.join(', ')}`, TW / 2, TH * 0.77);
   c.setTransform(1, 0, 0, 1, 0, 0);
   slipBackTex.needsUpdate = true;
 }
